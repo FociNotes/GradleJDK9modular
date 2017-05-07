@@ -1,3 +1,10 @@
+repositories {
+    jcenter()
+}
+
+apply plugin: 'idea'
+
+
 // Workaround to compile using dependencies in automatic modules in Gradle -
 // put their jars into 'lib' sub-directory and add it to the Gardle's module-path
 // (IDEA compiles them without such tricks)
@@ -11,15 +18,13 @@ task genModulePath {
     println("ModulePath=${modulePath}")
 }
 
-
 subprojects {
     repositories {
-        // Use jcenter for resolving your dependencies.
-        // You can declare any Maven/Ivy/file repository here.
         jcenter()
     }
 
     apply plugin: 'java'
+    apply plugin: 'idea'
 
     sourceCompatibility = JavaVersion.VERSION_1_9
     targetCompatibility = JavaVersion.VERSION_1_9
@@ -70,3 +75,4 @@ subprojects {
     }
 
 }
+

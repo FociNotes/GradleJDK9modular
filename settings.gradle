@@ -8,7 +8,7 @@
  * in the user guide at https://docs.gradle.org/4.0-20170506235917+0000/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'test'
+rootProject.name = 'GradleJDK9modular'
 
 include 'ModuleA'
 include 'ModuleB'
