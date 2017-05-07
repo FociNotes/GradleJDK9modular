@@ -8,6 +8,9 @@ JAVA_HOME="/usr/lib/jvm/JavaSE-9"
 echo "JAVA_HOME=${JAVA_HOME}"
 export JAVA_HOME
 
+GRADLE_HOME="/opt/java/deployment/gradle/gradle-3.5"
+echo "GRADLE_HOME=${GRADLE_HOME}"
+export GRADLE_HOME
 
 
 #_JAVA_OPTIONS=--permit-illegal-access
