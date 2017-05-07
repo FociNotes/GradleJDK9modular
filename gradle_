@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# L_VV
+# Workaround script for fixing incompatibility Gradle 3.5 with JDK9-ea+162
+
+
+JAVA_HOME="/usr/lib/jvm/JavaSE-9"
+echo "JAVA_HOME=${JAVA_HOME}"
+export JAVA_HOME
+
+
+
+#_JAVA_OPTIONS=--permit-illegal-access
+
+# More "legal" way:
+_JAVA_OPTIONS="-Dsun.reflect.debugModuleAccessChecks=true \
+	--add-modules=java.se.ee \
+	--add-opens=java.base/java.lang=ALL-UNNAMED \
+	--add-opens=java.base/java.lang.annotation=ALL-UNNAMED
+	--add-opens=java.base/java.lang.invoke=ALL-UNNAMED \
+	--add-opens=java.base/java.lang.reflect=ALL-UNNAMED \
+	--add-opens=java.base/java.io=ALL-UNNAMED \
+	--add-opens=java.base/java.net=ALL-UNNAMED \
+	--add-opens=java.base/java.text=ALL-UNNAMED \
+	--add-opens=java.base/java.util=ALL-UNNAMED \
+	--add-opens=java.base/java.util.concurrent=ALL-UNNAMED \
+	--add-opens=java.base/java.util.regex=ALL-UNNAMED \
+	--add-opens=java.base/java.util.jar=ALL-UNNAMED \
+	--add-opens=java.base/java.util.zip=ALL-UNNAMED \
+	--add-opens=java.base/javax.net=ALL-UNNAMED \
+	--add-opens=java.base/sun.net.www=ALL-UNNAMED \
+	--add-opens=java.base/sun.net.www.protocol.file=ALL-UNNAMED \
+	--add-opens=java.base/sun.nio.fs=ALL-UNNAMED \
+	--add-opens=java.base/java.security=ALL-UNNAMED"
+
+
+echo "_JAVA_OPTIONS=${_JAVA_OPTIONS}"
+export _JAVA_OPTIONS
+
+
+"$GRADLE_HOME/bin/gradle" "$@"

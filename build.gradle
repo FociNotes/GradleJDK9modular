@@ -1,0 +1,68 @@
+// Workaround to compile using dependencies in automatic modules in Gradle -
+// put their jars into 'lib' sub-directory and add it to the Gardle's module-path
+// (IDEA compiles them without such tricks)
+String modulePath = rootProject.file('lib').path
+
+task genModulePath {
+    println("getModulePath")
+    subprojects {
+        modulePath += ":${it.projectDir.path}/build/classes/java/main"
+    }
+    println("ModulePath=${modulePath}")
+}
+
+
+subprojects {
+    repositories {
+        // Use jcenter for resolving your dependencies.
+        // You can declare any Maven/Ivy/file repository here.
+        jcenter()
+    }
+
+    apply plugin: 'java'
+
+    dependencies {
+        // JUnit
+
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+        // JUnit Jupiter API for writing tests and extensions
+        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.0-M4'
+
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+        // JUnit Jupiter test engine implementation, only required at runtime
+        testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-M4'
+
+        // https://mvnrepository.com/artifact/org.junit/junit-launcher
+        // Public API for configuring and launching test plans - typically used by IDEs and build tools
+        testCompile group: 'org.junit', name: 'junit-launcher', version: '5.0.0-ALPHA'
+
+        // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-runner
+        // Runner for executing tests and test suites on the JUnit Platform in a JUnit 4 environment
+        testCompile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.0.0-M4'
+
+        //testCompile 'junit:junit:4.12'
+    }
+
+    if (plugins.hasPlugin('java')) {
+        compileJava.dependsOn(genModulePath)
+    }
+
+    compileJava {
+        doFirst {
+            println(":${project.name} compileJava.doFirst")
+
+            options.compilerArgs += ['--module-path', modulePath]
+        }
+
+        doLast {
+            println(":${project.name} compileJava.doLast")
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        println(":${project.name} JavaCompile")
+
+//        options.compilerArgs += ['--module-path', modulePath]
+    }
+
+}
