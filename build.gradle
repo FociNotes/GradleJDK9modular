@@ -92,10 +92,6 @@ subprojects {
 }
 
 task wrapper(type: Wrapper) {
-    if (GradleMajorVersion == '4') {
-        gradleVersion = '4.0-20170506235917+0000' // or execute './gradlew wrapper --gradle-version=4.0-20170506235917+0000'
-    }
-    else {
-        gradleVersion = '3.5'
-    }
+    gradleVersion = '3.5'
+    //gradleVersion = '4.0-20170506235917+0000' // or execute './gradlew wrapper --gradle-version=4.0-20170506235917+0000'
 }
