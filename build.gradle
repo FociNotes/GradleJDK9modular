@@ -2,8 +2,6 @@ repositories {
     jcenter()
 }
 
-apply plugin: 'idea'
-
 println "Running gradle version: $gradle.gradleVersion"
 println "Running JDK:            ${System.getProperty('java.version')} (${System.getProperty('java.vendor')} ${System.getProperty('java.vm.version')})"
                                  // '9-ea (Oracle Corporation 9-ea+166'
@@ -32,6 +30,27 @@ task genModulePath {
 
     println("ModulePath=${modulePath}")
 }
+
+
+// Do not generate Idea files by execute 'gradle idea' - it may generates old-format files.
+// Just import the project in Idea instead.
+allprojects {
+    apply plugin: 'idea'
+
+    println(":${project.name}: set Idea module properties")
+    idea {
+        module {
+            inheritOutputDirs = true // Compile into root_project_dir/out/ directory
+
+
+            //inheritOutputDirs = false // Compile into project_dir/build/
+
+            //outputDir = file("$buildDir/classes/main/")
+            //testOutputDir = file("$buildDir/classes/test")
+        }
+    }
+}
+
 
 subprojects {
     repositories {
