@@ -4,9 +4,12 @@ repositories {
 
 apply plugin: 'idea'
 
-ext.GradleMajorVersion = "$gradle.gradleVersion".charAt(0)
 println "Running gradle version: $gradle.gradleVersion"
-println "Running gradle major version: $GradleMajorVersion"
+println "Running JDK:            ${System.getProperty('java.version')} (${System.getProperty('java.vendor')} ${System.getProperty('java.vm.version')})"
+                                 // '9-ea (Oracle Corporation 9-ea+166'
+                                 // '1.8.0_102 (Oracle Corporation 25.102-b14)'
+println "OS:                     " + System.getProperty('os.name') + " / " + System.getProperty('os.arch') + " / " + System.getProperty('os.version')
+                                 // Linux / amd64 / 4.9.0-3-amd64
 
 
 // Workaround to compile using dependencies in automatic modules in Gradle -
@@ -16,20 +19,17 @@ String modulePath = rootProject.file('lib').path
 
 task genModulePath {
     println("getModulePath")
-    subprojects {
-        // Java classes are besides in the directoires:
-        // before Gradle 4.0: ${project.buildDir}/classes/${sourceSet.name}
-        //                    ${project.buildDir}/classes/main
-        // since  Gradle 4.0: ${project.buildDir}/classes/${sourceDirectorySet.name}/${sourceSet.name}
-        //                    ${project.buildDir}/classes/java/main
 
-        if (GradleMajorVersion == '4') {
-            modulePath += ":${project.buildDir}/classes/java/main"
-        }
-        else {
-            modulePath += ":${project.buildDir}/classes/main"
+    subprojects { proj ->
+        apply plugin: 'java'
+        sourceSets {
+            main { mainSourceSet ->
+                //println("${proj.name}: mainSourceSet.output.classesDir=${mainSourceSet.output.classesDir}")
+                modulePath += ":${mainSourceSet.output.classesDir}"
+            }
         }
     }
+
     println("ModulePath=${modulePath}")
 }
 
