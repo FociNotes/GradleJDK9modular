@@ -4,6 +4,10 @@ repositories {
 
 apply plugin: 'idea'
 
+ext.GradleMajorVersion = "$gradle.gradleVersion".charAt(0)
+println "Running gradle version: $gradle.gradleVersion"
+println "Running gradle major version: $GradleMajorVersion"
+
 
 // Workaround to compile using dependencies in automatic modules in Gradle -
 // put their jars into 'lib' sub-directory and add it to the Gardle's module-path
@@ -13,7 +17,18 @@ String modulePath = rootProject.file('lib').path
 task genModulePath {
     println("getModulePath")
     subprojects {
-        modulePath += ":${it.projectDir.path}/build/classes/java/main"
+        // Java classes are besides in the directoires:
+        // before Gradle 4.0: ${project.buildDir}/classes/${sourceSet.name}
+        //                    ${project.buildDir}/classes/main
+        // since  Gradle 4.0: ${project.buildDir}/classes/${sourceDirectorySet.name}/${sourceSet.name}
+        //                    ${project.buildDir}/classes/java/main
+
+        if (GradleMajorVersion == '4') {
+            modulePath += ":${project.buildDir}/classes/java/main"
+        }
+        else {
+            modulePath += ":${project.buildDir}/classes/main"
+        }
     }
     println("ModulePath=${modulePath}")
 }
@@ -60,7 +75,7 @@ subprojects {
         doFirst {
             println(":${project.name} compileJava.doFirst")
 
-///            options.compilerArgs += ['--module-path', modulePath]
+            options.compilerArgs += ['--module-path', modulePath]
         }
 
         doLast {
@@ -77,6 +92,10 @@ subprojects {
 }
 
 task wrapper(type: Wrapper) {
-   gradleVersion = '3.5'
-   //gradleVersion = '4.0-20170506235917+0000' // or execute './gradlew wrapper --gradle-version=4.0-20170506235917+0000'
+    if (GradleMajorVersion == '4') {
+        gradleVersion = '4.0-20170506235917+0000' // or execute './gradlew wrapper --gradle-version=4.0-20170506235917+0000'
+    }
+    else {
+        gradleVersion = '3.5'
+    }
 }

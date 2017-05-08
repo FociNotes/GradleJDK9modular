@@ -13,5 +13,42 @@ rootProject.name = 'GradleJDK9modular'
 include 'ModuleA'
 include 'ModuleB'
 
+
+rootProject.children.each {project ->
+    // e.g. 'modules/com.company.ModuleA',
+    //      'modules/ModuleA'
+    project.projectDir = new File("modules/$project.name")
+    println(":subproject ${project.name}: ${project.projectDir}")
+
+    // e.g. 'com.company.ModuleA' --> 'ModuleA.build.gradle',
+    //      'ModuleA' --> 'ModuleA.build.gradle'
+    String fileName = project.name
+    fileName = fileName.substring(fileName.lastIndexOf(".") + 1).trim()
+    project.buildFileName = "${fileName}.build.gradle"
+
+    assert project.projectDir.isDirectory()
+    assert project.buildFile.isFile()
+}
+
+
+/*
+// More straightforward ways:
+
+// 1. Module names comply with the reverse Internet domain-name convention
+include 'com.company.ModuleA'
+include 'com.company.ModuleB'
+
+project(":com.company.ModuleA").projectDir = file("modules/com.company.ModuleA")
+project(":com.company.ModuleB").projectDir = file("modules/com.company.ModuleB")
+project(":com.company.ModuleA").buildFileName = file("ModuleA.build.gradle")
+project(":com.company.ModuleB").buildFileName = file("ModuleB.build.gradle")
+
+// 2. Simple module names
+include 'ModuleA'
+include 'ModuleB'
+
 project(":ModuleA").projectDir = file("modules/ModuleA")
 project(":ModuleB").projectDir = file("modules/ModuleB")
+project(":ModuleA").buildFileName = file("ModuleA.build.gradle")
+project(":ModuleB").buildFileName = file("ModuleB.build.gradle")
+*/
