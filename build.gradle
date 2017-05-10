@@ -2,33 +2,78 @@ repositories {
     jcenter()
 }
 
+println()
 println "Running gradle version: $gradle.gradleVersion"
 println "Running JDK:            ${System.getProperty('java.version')} (${System.getProperty('java.vendor')} ${System.getProperty('java.vm.version')})"
                                  // '9-ea (Oracle Corporation 9-ea+166'
                                  // '1.8.0_102 (Oracle Corporation 25.102-b14)'
 println "OS:                     " + System.getProperty('os.name') + " / " + System.getProperty('os.arch') + " / " + System.getProperty('os.version')
                                  // Linux / amd64 / 4.9.0-3-amd64
+println()
 
 
-// Workaround to compile using dependencies in automatic modules in Gradle -
-// put their jars into 'lib' sub-directory and add it to the Gardle's module-path
-// (IDEA compiles them without such tricks)
-String modulePath = rootProject.file('lib').path
+String modulePath
 
+// Add to modulePath subprojects' classes paths
 task genModulePath {
-    println("getModulePath")
+    println("genModulePath")
+
+    StringJoiner joiner = new StringJoiner(":");
+
+    // Workaround to compile using dependencies in automatic modules in Gradle -
+    // put their jars into 'lib' sub-directory and add it to the Gardle's module-path
+    // (IDEA compiles them without such tricks)
+    //
+    joiner.add(rootProject.file('lib').path);
 
     subprojects { proj ->
         apply plugin: 'java'
         sourceSets {
-            main { mainSourceSet ->
-                //println("${proj.name}: mainSourceSet.output.classesDir=${mainSourceSet.output.classesDir}")
-                modulePath += ":${mainSourceSet.output.classesDir}"
+            main { sourceSetsMain ->
+                sourceSetsMain.getOutput().getClassesDirs().each {
+                    joiner.add(it.path)
+                    }
             }
         }
     }
 
+    modulePath = joiner.toString()
+
     println("ModulePath=${modulePath}")
+    println()
+}
+
+
+String sourcePath
+
+// Add to sourcePath subprojects' sources paths
+task genSourcePath {
+    println("genSourcePath")
+
+    StringJoiner joiner = new StringJoiner(":");
+
+    joiner.add(rootProject.file('lib/src').path);
+
+    String srcMain
+    subprojects { proj ->
+        apply plugin: 'java'
+        sourceSets {
+            main { sourceSetsMain ->
+                sourceSetsMain.getJava().getSrcDirs().each {
+                    // Remove the "/java" tail from the string
+                    srcMain = it.path
+                    srcMain = (srcMain.endsWith("/java")) ? srcMain.substring(0, srcMain.lastIndexOf("/java")) : srcMain;
+
+                    joiner.add(srcMain)
+                }
+            }
+        }
+    }
+
+    sourcePath = joiner.toString()
+
+    println("sourcePath=${sourcePath}")
+    println()
 }
 
 
@@ -49,6 +94,7 @@ allprojects {
             //testOutputDir = file("$buildDir/classes/test")
         }
     }
+    println()
 }
 
 
@@ -95,6 +141,8 @@ subprojects {
             println(":${project.name} compileJava.doFirst")
 
             options.compilerArgs += ['--module-path', modulePath]
+
+            options.compilerArgs += ['--source-path', sourcePath]
         }
 
         doLast {
@@ -105,7 +153,9 @@ subprojects {
     tasks.withType(JavaCompile) {
         println(":${project.name} JavaCompile")
 
-//        options.compilerArgs += ['--module-path', modulePath]
+        // options.compilerArgs += ['--module-path', modulePath]
+
+        // options.compilerArgs += ['--source-path', sourcePath]
     }
 
 }

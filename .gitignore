@@ -1,9 +1,9 @@
 # Gradle's files
 .gradle/
-gradle.properties
+#gradle.properties
 
 # Workaround for build a Gradle-project under JDK9 ea - put automatic modules jars here
-lib/
+#lib/
 
 # IntelliJ IDEA's files
 .idea/
