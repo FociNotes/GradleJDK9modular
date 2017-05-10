@@ -12,6 +12,7 @@ export JAVA_HOME
 # ###################################################
 GRADLE_HOME="/opt/java/deployment/gradle/gradle-3.5"
 #GRADLE_HOME="/opt/java/deployment/gradle/gradle-4.0"
+#GRADLE_HOME="/opt/java/deployment/gradle/gradle-4.1"
 
 echo "GRADLE_HOME=${GRADLE_HOME}"
 export GRADLE_HOME
@@ -22,6 +23,7 @@ export GRADLE_HOME
 
 # More "legal" way:
 JDK_JAVA_OPTIONS="-Dsun.reflect.debugModuleAccessChecks=true \
+	-XX:+IgnoreUnrecognizedVMOptions \
 	--add-modules=java.se.ee \
 	--add-opens=java.base/java.lang=ALL-UNNAMED \
 	--add-opens=java.base/java.lang.annotation=ALL-UNNAMED
