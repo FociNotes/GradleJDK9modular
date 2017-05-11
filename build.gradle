@@ -134,6 +134,7 @@ subprojects {
 
     if (plugins.hasPlugin('java')) {
         compileJava.dependsOn(genModulePath)
+        compileJava.dependsOn(genSourcePath)
     }
 
     compileJava {
