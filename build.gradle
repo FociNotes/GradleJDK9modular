@@ -18,7 +18,7 @@ String modulePath
 task genModulePath {
     println("genModulePath")
 
-    StringJoiner joiner = new StringJoiner(":");
+    StringJoiner joiner = new StringJoiner(File.pathSeparator); // ':' in linux, ';' in windows
 
     // Workaround to compile using dependencies in automatic modules in Gradle -
     // put their jars into 'lib' sub-directory and add it to the Gardle's module-path
@@ -50,9 +50,9 @@ String sourcePath
 task genSourcePath {
     println("genSourcePath")
 
-    StringJoiner joiner = new StringJoiner(":");
+    StringJoiner joiner = new StringJoiner(File.pathSeparator); // ':' in linux, ';' in windows
 
-    joiner.add(rootProject.file('lib/src').path);
+    joiner.add(rootProject.file("lib" + File.separator + "src").path); // '/' in linux, '\' in windows
 
     String srcMain
     subprojects { proj ->
@@ -143,6 +143,8 @@ subprojects {
             options.compilerArgs += ['--module-path', modulePath]
 
             options.compilerArgs += ['--source-path', sourcePath]
+            // Even such simple method works:
+            // options.compilerArgs += ['--source-path', rootProject.projectDir.path + File.separator + "modules"]
         }
 
         doLast {
